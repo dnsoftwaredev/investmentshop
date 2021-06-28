@@ -1,0 +1,17 @@
+Packages guide:
+
+nodemon is to not have to start and stop the server repeatedly during development. The server will
+automatically see change and update
+
+concurrently: is a package that we use to create the script "dev": where we run back and front end
+server in 1 script
+
+dotenv: is a package to get environment variables from an .env file into process.env
+
+Random Explanation:
+
+The const something = require('something package'); is old syntax
+we can use es modules style in newer version of nodejs (from node 14.6)
+Have to put {"type":"module"} in package.json
+NOTE: if import a file not a package => need to add .js behind it 
+module.exports change into export default for files
