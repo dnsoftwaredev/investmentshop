@@ -15,3 +15,13 @@ we can use es modules style in newer version of nodejs (from node 14.6)
 Have to put {"type":"module"} in package.json
 NOTE: if import a file not a package => need to add .js behind it 
 module.exports change into export default for files
+
+MongoDB is a document-based database. It just means that the database contains a bunch of JSON
+objects that contains our data
+
+Mongoose => create a schema to model your application data.
+
+express-async-handler => is a middleware for handling exceptions inside of async express routes and passing
+them to your express error handlers.
+
+Middleware: is a function that has access to req, res
