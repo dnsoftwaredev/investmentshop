@@ -25,3 +25,8 @@ express-async-handler => is a middleware for handling exceptions inside of async
 them to your express error handlers.
 
 Middleware: is a function that has access to req, res
+
+HOW TO SETUP REDUX: see store.js and index.js
+
+WTF IS REDUX-THUNK MIDDLWARE? with a plain basic redux store => can only do simple synchronous updates (1 at a time)
+with redux-thunk you can do async logic that interacts with the store. 
