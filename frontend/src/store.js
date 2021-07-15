@@ -4,7 +4,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import { productListReducer, productDetailsReducer } from './reducers/productReducers';
 import { cartReducer } from './reducers/cartReducers';
 import { userLoginReducer, userRegisterReducer, userDetailsReducer, userUpdateProfileReducer } from './reducers/userReducers';
-import { orderCreateReducer } from './reducers/orderReducers';
+import { orderCreateReducer, orderDetailsReducer, orderPayReducer, orderListMyReducer } from './reducers/orderReducers';
 // combineReducers is to be used to combine all reducers into a single thing that can be passed to the store
 const reducer = combineReducers({
     productList: productListReducer,
@@ -14,7 +14,10 @@ const reducer = combineReducers({
     userRegister: userRegisterReducer,
     userDetails: userDetailsReducer,
     userUpdateProfile: userUpdateProfileReducer,
-    orderCreate: orderCreateReducer
+    orderCreate: orderCreateReducer,
+    orderDetails: orderDetailsReducer,
+    orderPay: orderPayReducer,
+    orderListMy: orderListMyReducer
 });
 
 // grab the cart items from local storage

@@ -26,6 +26,8 @@ app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/orders', orderRoutes);
 
+app.get('/api/config/paypal', (req, res) => res.send(process.env.PAYPAL_CLIENT_ID));
+
 app.use(notFound);
 
 // with this middleware, the server send back a json file instead of a HTML files
