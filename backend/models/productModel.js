@@ -23,8 +23,6 @@ const reviewSchema = mongoose.Schema({
 });
 
 const productSchema = mongoose.Schema({
-    // this right here add a connection between product and user, 
-    // syntax is below
     user: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
@@ -61,7 +59,7 @@ const productSchema = mongoose.Schema({
         required: true,
         default: 0,
     },
-    price: {
+    minimumInvestment: {
         type: Number,
         required: true,
         default: 0,
@@ -71,6 +69,21 @@ const productSchema = mongoose.Schema({
         required: true,
         default: 0,
     },
+    targetIRR: {
+        type: Number,
+        required: true,
+        default: 0,
+    },
+    targetCashYield: {
+        type: Number,
+        required: true,
+        default: 0,
+    },
+    holdPeriod: {
+        type: Number,
+        required: true,
+        default: 0,
+    }
 }, {
     timestamps: true,
 });

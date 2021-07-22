@@ -6,6 +6,7 @@ import Rating from '../components/Rating';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import Meta from '../components/Meta';
+import NumberFormat from 'react-number-format';
 import { listProductDetails, createProductReview } from '../actions/productActions';
 import { PRODUCT_CREATE_REVIEW_RESET } from '../constants/productConstants';
 
@@ -59,7 +60,7 @@ const ProductScreen = ({ history, match }) => {
                     <Meta title={product.name} />
                     <Row>
                         <Col md={6}>
-                            <Image src={product.image} alt={product.name} fluid />
+                            <Image src={product.image} alt={product.name} style={{ height: '400px', width: '600px', objectFit: 'cover' }} fluid />
                         </Col>
                         <Col md={3}>
                             <ListGroup variant='flush'>
@@ -71,7 +72,16 @@ const ProductScreen = ({ history, match }) => {
                                 <Rating value={product.rating} text={`${product.numReviews} reviews`} />
                             </ListGroup.Item>
                             <ListGroup.Item>
-                                Price: ${product.price}
+                                Investment Minimum: <NumberFormat value={product.minimumInvestment} displayType={'text'} thousandSeparator={true} prefix={'$'} />
+                            </ListGroup.Item>
+                            <ListGroup.Item>
+                                Project Target IRR: <NumberFormat value={product.targetIRR} displayType={'text'} thousandSeparator={true} suffix={'%'} />
+                            </ListGroup.Item>
+                            <ListGroup.Item>
+                                Project Target Cash Yield: <NumberFormat value={product.targetCashYield} displayType={'text'} thousandSeparator={true} suffix={'%'} />
+                            </ListGroup.Item>
+                            <ListGroup.Item>
+                                Investment Period: <NumberFormat value={product.holdPeriod} displayType={'text'} thousandSeparator={true} suffix={' years'} />
                             </ListGroup.Item>
                             <ListGroup.Item>
                                 Description: {product.description}
@@ -83,10 +93,10 @@ const ProductScreen = ({ history, match }) => {
                                     <ListGroup.Item>
                                         <Row>
                                             <Col>
-                                                Price:
+                                                Amount:
                                             </Col>
                                             <Col>
-                                                <strong>${product.price}</strong>
+                                                <strong><NumberFormat value={product.minimumInvestment} displayType={'text'} thousandSeparator={true} prefix={'$'} /></strong>
                                             </Col>
                                         </Row>
                                     </ListGroup.Item>
@@ -96,7 +106,7 @@ const ProductScreen = ({ history, match }) => {
                                                 Status:
                                             </Col>
                                             <Col>
-                                                <strong>{product.countInStock > 0 ? 'In Stock' : 'Out Of Stock'}</strong>
+                                                <strong>{product.countInStock > 0 ? 'Funding' : 'Fully Subscribed'}</strong>
                                             </Col>
                                         </Row>
                                     </ListGroup.Item>
@@ -104,7 +114,7 @@ const ProductScreen = ({ history, match }) => {
                                     {product.countInStock > 0 && (
                                         <ListGroup.Item>
                                             <Row>
-                                                <Col>Qty</Col>
+                                                <Col>Quantity</Col>
                                                 <Col>
                                                     <Form.Control as='select' value={qty} onChange={(e) => setQty(e.target.value)}>
                                                         {[...Array(product.countInStock).keys()].map(x => (
@@ -117,6 +127,16 @@ const ProductScreen = ({ history, match }) => {
                                             </Row>
                                         </ListGroup.Item>
                                     )}
+                                    <ListGroup.Item>
+                                        <Row>
+                                            <Col>
+                                                Total Investment:
+                                            </Col>
+                                            <Col>
+                                                <NumberFormat value={ product.minimumInvestment * qty } displayType={'text'} thousandSeparator={true} prefix={'$'} />
+                                            </Col>
+                                        </Row>
+                                    </ListGroup.Item>
 
                                     <ListGroup.Item>
                                         <Button onClick={addToCartHandler} className='btn col-12' type='button' disabled={product.countInStock === 0}>

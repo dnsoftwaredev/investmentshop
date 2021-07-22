@@ -11,7 +11,9 @@ const orderSchema = mongoose.Schema({
             name: { type: String, required: true, },
             qty: { type: Number, required: true, },
             image: { type: String, required: true, },
-            price: { type: Number, required: true, },
+            minimumInvestment: { type: Number, required: true, },
+            targetIRR: { type: Number, required: true, },
+            targetCashYield: { type: Number, required: true, },
             product: {
                 type: mongoose.Schema.Types.ObjectId,
                 required: true,
@@ -19,7 +21,7 @@ const orderSchema = mongoose.Schema({
             }
         }
     ],
-    shippingAddress: {
+    billingAddress: {
         address: { type: String, required: true, },
         city: { type: String, required: true, },
         postalCode: { type: String, required: true, },
@@ -35,17 +37,17 @@ const orderSchema = mongoose.Schema({
         update_time: { type: String },
         email_address: { type: String },
     },
-    taxPrice: {
-        type: Number,
-        required: true,
-        default: 0,
-    },
-    shippingPrice: {
+    platformFee: {
         type: Number,
         required: true,
         default: 0,
     },
     totalPrice: {
+        type: Number,
+        required: true,
+        default: 0,
+    },
+    itemsPrice: {
         type: Number,
         required: true,
         default: 0,
@@ -58,12 +60,12 @@ const orderSchema = mongoose.Schema({
     paidAt: {
         type: Date,
     },
-    isDelivered: {
+    isApproved: {
         type: Boolean,
         required: true,
         default: false
     },
-    deliveredAt: {
+    approvedAt: {
         type: Date,
     },
 }, {

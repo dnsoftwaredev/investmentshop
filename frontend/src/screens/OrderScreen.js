@@ -6,8 +6,9 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
-import { getOrderDetails, payOrder, deliverOrder } from '../actions/orderActions';
-import { ORDER_PAY_RESET, ORDER_DELIVER_RESET } from '../constants/orderConstants';
+import NumberFormat from 'react-number-format';
+import { getOrderDetails, payOrder, approveOrder } from '../actions/orderActions';
+import { ORDER_PAY_RESET, ORDER_APPROVE_RESET } from '../constants/orderConstants';
 
 const OrderScreen = ({ match, history }) => {
     const orderId = match.params.id;
@@ -26,15 +27,8 @@ const OrderScreen = ({ match, history }) => {
     // rename syntax
     const { loading: loadingPay, success: successPay } = orderPay;
 
-    const orderDeliver = useSelector(state => state.orderDeliver);
-    const { loading: loadingDeliver, success: successDeliver } = orderDeliver;
-
-    if (!loading) {
-        const addDecimals = (num) => {
-            return (Math.round(num * 100) / 100).toFixed(2);
-        };
-        order.itemsPrice = addDecimals(order.orderItems.reduce((acc, item) => acc + item.price * item.qty, 0));
-    }
+    const orderApprove = useSelector(state => state.orderApprove);
+    const { loading: loadingApprove, success: successApprove } = orderApprove;
 
     useEffect(() => {
         if (!userInfo) {
@@ -53,9 +47,9 @@ const OrderScreen = ({ match, history }) => {
             document.body.appendChild(script);
         };
 
-        if (!order || order._id !== orderId || successPay || successDeliver) {
+        if (!order || order._id !== orderId || successPay || successApprove) {
             dispatch({ type: ORDER_PAY_RESET });
-            dispatch({ type: ORDER_DELIVER_RESET });
+            dispatch({ type: ORDER_APPROVE_RESET });
             dispatch(getOrderDetails(orderId));
         } else if (!order.isPaid) {
             if (!window.paypal) {
@@ -64,15 +58,15 @@ const OrderScreen = ({ match, history }) => {
                 setSdkReady(true);
             }
         }
-    }, [order, orderId, dispatch, successPay, successDeliver, history, userInfo]);
+    }, [order, orderId, dispatch, successPay, successApprove, history, userInfo]);
 
     const successPaymentHandler = (paymentResult) => {
         console.log(paymentResult);
         dispatch(payOrder(orderId, paymentResult));
     };
 
-    const deliverHandler = () => {
-        dispatch(deliverOrder(order));
+    const approveHandler = () => {
+        dispatch(approveOrder(order));
     };
 
     return loading ? <Loader /> : error ? <Message variant='danger'>{error}</Message> : <>
@@ -81,7 +75,7 @@ const OrderScreen = ({ match, history }) => {
             <Col md={8}>
                 <ListGroup variant='flush'>
                     <ListGroup.Item>
-                        <h2>Shipping</h2>
+                        <h2>Billing</h2>
                         <p>
                             <strong>Name: </strong> {order.user.name}
                         </p>
@@ -91,9 +85,9 @@ const OrderScreen = ({ match, history }) => {
                         </p>
                         <p>
                             <strong>Address:</strong>
-                            {order.shippingAddress.address}, {order.shippingAddress.city} {order.shippingAddress.postalCode}, {' '} {order.shippingAddress.country}
+                            {order.billingAddress.address}, {order.billingAddress.city} {order.billingAddress.postalCode}, {' '} {order.billingAddress.country}
                         </p>
-                        {order.isDelivered ? <Message variant='success'>Delivered on {order.deliveredAt}</Message> : <Message variant='danger'>Not Delivered</Message>}
+                        {order.isApproved ? <Message variant='success'>Approved on {order.approvedAt}</Message> : <Message variant='danger'>Not Approved</Message>}
                     </ListGroup.Item>
                     <ListGroup.Item>
                         <h2>Payment Method</h2>
@@ -105,7 +99,7 @@ const OrderScreen = ({ match, history }) => {
                     </ListGroup.Item>
 
                     <ListGroup.Item>
-                        <h2>Order Items</h2>
+                        <h2>Investment Selections</h2>
                         {order.orderItems.length === 0 ? (<Message>Your order is empty</Message>) : (
                             <ListGroup variant='flush'>
                                 {order.orderItems.map((item, index) => (
@@ -125,7 +119,7 @@ const OrderScreen = ({ match, history }) => {
                                                 </Link>
                                             </Col>
                                             <Col md={4}>
-                                                {item.qty} x ${item.price} = ${item.qty * item.price}
+                                                {item.qty} x <NumberFormat value={item.minimumInvestment} displayType={'text'} thousandSeparator={true} prefix={'$'} /> = <NumberFormat value={item.qty * item.minimumInvestment} displayType={'text'} thousandSeparator={true} prefix={'$'} />
                                             </Col>
                                         </Row>
                                     </ListGroup.Item>
@@ -143,26 +137,20 @@ const OrderScreen = ({ match, history }) => {
                         </ListGroup.Item>
                         <ListGroup.Item>
                             <Row>
-                                <Col>Items</Col>
-                                <Col>${order.itemsPrice}</Col>
+                                <Col>Investment Amount</Col>
+                                <Col><NumberFormat value={order.itemsPrice} displayType={'text'} thousandSeparator={true} prefix={'$'} /></Col>
                             </Row>
                         </ListGroup.Item>
                         <ListGroup.Item>
                             <Row>
-                                <Col>Shipping</Col>
-                                <Col>${order.shippingPrice}</Col>
-                            </Row>
-                        </ListGroup.Item>
-                        <ListGroup.Item>
-                            <Row>
-                                <Col>Tax</Col>
-                                <Col>${order.taxPrice}</Col>
+                                <Col>Platform Fee</Col>
+                                <Col><NumberFormat value={order.platformFee} displayType={'text'} thousandSeparator={true} prefix={'$'} /></Col>
                             </Row>
                         </ListGroup.Item>
                         <ListGroup.Item>
                             <Row>
                                 <Col>Total</Col>
-                                <Col>${order.totalPrice}</Col>
+                                <Col><NumberFormat value={order.totalPrice} displayType={'text'} thousandSeparator={true} prefix={'$'} /></Col>
                             </Row>
                         </ListGroup.Item>
                         {!order.isPaid && (
@@ -173,11 +161,11 @@ const OrderScreen = ({ match, history }) => {
                                 )}
                             </ListGroup.Item>
                         )}
-                        {loadingDeliver && <Loader />}
-                        {userInfo && userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+                        {loadingApprove && <Loader />}
+                        {userInfo && userInfo.isAdmin && order.isPaid && !order.isApproved && (
                             <ListGroup.Item>
-                                <Button type='button' className='btn col-12' onClick={deliverHandler}>
-                                    Mark As Delivered
+                                <Button type='button' className='btn col-12' onClick={approveHandler}>
+                                    Mark As Approved
                                 </Button>
                             </ListGroup.Item>
                         )}

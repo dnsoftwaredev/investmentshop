@@ -7,14 +7,14 @@ import asyncHandler from 'express-async-handler';
 // @route   POST /api/orders
 // @access  Private
 const addOrderItems = asyncHandler(async (req, res) => {
-    const { orderItems, shippingAddress, paymentMethod, itemsPrice, taxPrice, shippingPrice, totalPrice } = req.body;
+    const { orderItems, billingAddress, paymentMethod, itemsPrice, platformFee, totalPrice } = req.body;
 
     if (orderItems && orderItems.legnth === 0) {
         res.status(400);
         throw new Error('No order items');
     } else {
         const order = new Order({
-            orderItems, shippingAddress, paymentMethod, itemsPrice, taxPrice, shippingPrice, totalPrice,
+            orderItems, billingAddress, paymentMethod, itemsPrice, platformFee, totalPrice,
             user: req.user._id
         });
 
@@ -64,15 +64,15 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
     }
 });
 
-// @desc    Update order to delivered
-// @route   PUT /api/orders/:id/deliver
+// @desc    Update order to approved
+// @route   PUT /api/orders/:id/approve
 // @access  Private/Admin
-const updateOrderToDelivered = asyncHandler(async (req, res) => {
+const updateOrderToApproved = asyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
 
     if (order) {
-        order.isDelivered = true;
-        order.deliveredAt = Date.now();
+        order.isApproved = true;
+        order.approvedAt = Date.now();
 
         const updatedOrder = await order.save();
 
@@ -104,7 +104,7 @@ export {
     addOrderItems,
     getOrderById,
     updateOrderToPaid,
-    updateOrderToDelivered,
+    updateOrderToApproved,
     getMyOrders,
     getOrders
 };

@@ -7,10 +7,10 @@ import CheckoutSteps from '../components/CheckoutSteps';
 
 const PaymentScreen = ({ history }) => {
     const cart = useSelector(state => state.cart);
-    const { shippingAddress } = cart;
+    const { billingAddress } = cart;
 
-    if (!shippingAddress) {
-        history.push('/shipping');
+    if (!billingAddress) {
+        history.push('/billing');
     }
 
     const [paymentMethod, setPaymentMethod] = useState('PayPal');

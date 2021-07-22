@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
 import CheckoutSteps from '../components/CheckoutSteps';
 import { createOrder } from '../actions/orderActions';
+import NumberFormat from 'react-number-format';
+import { ORDER_CREATE_RESET } from '../constants/orderConstants';
 
 const PlaceOrderScreen = ({ history }) => {
     const dispatch = useDispatch();
@@ -15,17 +17,16 @@ const PlaceOrderScreen = ({ history }) => {
         return (Math.round(num * 100) / 100).toFixed(2);
     };
 
-    // calculate the prices
-    cart.itemsPrice = addDecimals(cart.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0));
-    cart.shippingPrice = addDecimals(cart.itemsPrice > 100 ? 0 : 20);
-    cart.taxPrice = addDecimals(Number((0.15 * cart.itemsPrice)));
-    cart.totalPrice = addDecimals(Number(cart.itemsPrice) + Number(cart.shippingPrice) + Number(cart.taxPrice));
+    cart.itemsPrice = addDecimals(Number(cart.cartItems.reduce((acc, item) => acc + item.minimumInvestment * item.qty, 0)));
+    cart.platformFee = addDecimals(Number((0.01 * cart.itemsPrice)));
+    cart.totalPrice = addDecimals(Number(cart.itemsPrice) + Number(cart.platformFee));
 
     const orderCreate = useSelector(state => state.orderCreate);
     const { order, success, error } = orderCreate;
 
     useEffect(() => {
         if (success) {
+            dispatch({ type: ORDER_CREATE_RESET });
             history.push(`/order/${order._id}`);
         }
         // eslint-disable-next-line
@@ -34,11 +35,10 @@ const PlaceOrderScreen = ({ history }) => {
     const placeOrderHandler = () => {
         dispatch(createOrder({
             orderItems: cart.cartItems,
-            shippingAddress: cart.shippingAddress,
+            billingAddress: cart.billingAddress,
             paymentMethod: cart.paymentMethod,
             itemsPrice: cart.itemsPrice,
-            shippingPrice: cart.shippingPrice,
-            taxPrice: cart.taxPrice,
+            platformFee: cart.platformFee,
             totalPrice: cart.totalPrice
         }));
     };
@@ -48,12 +48,13 @@ const PlaceOrderScreen = ({ history }) => {
             <CheckoutSteps step1 step2 step3 step4 />
             <Row>
                 <Col md={8}>
+                    {error && <Message variant='danger'>{error}</Message>}
                     <ListGroup variant='flush'>
                         <ListGroup.Item>
-                            <h2>Shipping</h2>
+                            <h2>Billing</h2>
                             <p>
                                 <strong>Address:</strong>
-                                {cart.shippingAddress.address}, {cart.shippingAddress.city} {cart.shippingAddress.postalCode}, {' '} {cart.shippingAddress.country}
+                                {cart.billingAddress.address}, {cart.billingAddress.city} {cart.billingAddress.postalCode}, {' '} {cart.billingAddress.country}
                             </p>
                         </ListGroup.Item>
                         <ListGroup.Item>
@@ -63,7 +64,7 @@ const PlaceOrderScreen = ({ history }) => {
                         </ListGroup.Item>
 
                         <ListGroup.Item>
-                            <h2>Order Items</h2>
+                            <h2>Investment Selections</h2>
                             {cart.cartItems.length === 0 ? (<Message>Your cart is empty</Message>) : (
                                 <ListGroup variant='flush'>
                                     {cart.cartItems.map((item, index) => (
@@ -83,7 +84,7 @@ const PlaceOrderScreen = ({ history }) => {
                                                     </Link>
                                                 </Col>
                                                 <Col md={4}>
-                                                    {item.qty} x ${item.price} = ${item.qty * item.price}
+                                                    {item.qty} x <NumberFormat value={item.minimumInvestment} displayType={'text'} thousandSeparator={true} prefix={'$'} /> = <NumberFormat value={item.qty * item.minimumInvestment} displayType={'text'} thousandSeparator={true} prefix={'$'} />
                                                 </Col>
                                             </Row>
                                         </ListGroup.Item>
@@ -102,29 +103,20 @@ const PlaceOrderScreen = ({ history }) => {
                             <ListGroup.Item>
                                 <Row>
                                     <Col>Items</Col>
-                                    <Col>${cart.itemsPrice}</Col>
+                                    <Col><NumberFormat value={cart.itemsPrice} displayType={'text'} thousandSeparator={true} prefix={'$'} /></Col>
                                 </Row>
                             </ListGroup.Item>
                             <ListGroup.Item>
                                 <Row>
-                                    <Col>Shipping</Col>
-                                    <Col>${cart.shippingPrice}</Col>
-                                </Row>
-                            </ListGroup.Item>
-                            <ListGroup.Item>
-                                <Row>
-                                    <Col>Tax</Col>
-                                    <Col>${cart.taxPrice}</Col>
+                                    <Col>Platform Fee</Col>
+                                    <Col><NumberFormat value={cart.platformFee} displayType={'text'} thousandSeparator={true} prefix={'$'} /></Col>
                                 </Row>
                             </ListGroup.Item>
                             <ListGroup.Item>
                                 <Row>
                                     <Col>Total</Col>
-                                    <Col>${cart.totalPrice}</Col>
+                                    <Col><NumberFormat value={cart.totalPrice} displayType={'text'} thousandSeparator={true} prefix={'$'} /></Col>
                                 </Row>
-                            </ListGroup.Item>
-                            <ListGroup.Item>
-                                {error && <Message variant='danger'>{error}</Message>}
                             </ListGroup.Item>
                             <ListGroup.Item>
                                 <Button type='button' className='btn col-12' disabled={cart.cartItems === 0} onClick={placeOrderHandler}>Place Order</Button>

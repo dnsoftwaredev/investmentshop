@@ -13,7 +13,7 @@ const Meta = ({ title, description, keywords }) => {
 
 Meta.defaultProps = {
     title: 'Welcome To InvestmentShop',
-    keyword: 'electronics, buy electronics, cheap electronics',
+    keyword: 'investments, IRR, return',
     description: 'We connect you to the best investments'
 };
 
