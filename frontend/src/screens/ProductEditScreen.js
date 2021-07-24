@@ -7,13 +7,16 @@ import Message from '../components/Message';
 import Loader from '../components/Loader';
 import FormContainer from '../components/FormContainer';
 import { listProductDetails, updateProduct } from '../actions/productActions';
-import { PRODUCT_UPDATE_RESET } from '../constants/productConstants';
+import { PRODUCT_UPDATE_RESET, PRODUCT_DETAILS_RESET } from '../constants/productConstants';
 
 const ProductEditScreen = ({ match, history }) => {
     const productId = match.params.id;
 
     const [name, setName] = useState('');
-    const [price, setPrice] = useState(0);
+    const [minimumInvestment, setMinimumInvestment] = useState(0);
+    const [targetIRR, setTargetIRR] = useState(0);
+    const [targetCashYield, setTargetCashYield] = useState(0);
+    const [holdPeriod, setHoldPeriod] = useState(0);
     const [image, setImage] = useState('');
     const [brand, setBrand] = useState('');
     const [category, setCategory] = useState('');
@@ -27,22 +30,22 @@ const ProductEditScreen = ({ match, history }) => {
     const { loading, error, product } = productDetails;
 
     const productUpdate = useSelector((state) => state.productUpdate);
-    const {
-        loading: loadingUpdate,
-        error: errorUpdate,
-        success: successUpdate,
-    } = productUpdate;
+    const { loading: loadingUpdate, error: errorUpdate, success: successUpdate, } = productUpdate;
 
     useEffect(() => {
         if (successUpdate) {
             dispatch({ type: PRODUCT_UPDATE_RESET });
+            dispatch({ type: PRODUCT_DETAILS_RESET });
             history.push('/admin/productlist');
         } else {
             if (!product.name || product._id !== productId) {
                 dispatch(listProductDetails(productId));
             } else {
                 setName(product.name);
-                setPrice(product.price);
+                setMinimumInvestment(product.minimumInvestment);
+                setTargetCashYield(product.targetCashYield);
+                setTargetIRR(product.targetIRR);
+                setHoldPeriod(product.holdPeriod);
                 setImage(product.image);
                 setBrand(product.brand);
                 setCategory(product.category);
@@ -81,7 +84,10 @@ const ProductEditScreen = ({ match, history }) => {
             updateProduct({
                 _id: productId,
                 name,
-                price,
+                minimumInvestment,
+                targetIRR,
+                targetCashYield,
+                holdPeriod,
                 image,
                 brand,
                 category,
@@ -97,7 +103,7 @@ const ProductEditScreen = ({ match, history }) => {
                 Go Back
             </Link>
             <FormContainer>
-                <h1>Edit Product</h1>
+                <h1>Edit Investment</h1>
                 {loadingUpdate && <Loader />}
                 {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
                 {loading ? (
@@ -116,13 +122,43 @@ const ProductEditScreen = ({ match, history }) => {
                             ></Form.Control>
                         </Form.Group>
 
-                        <Form.Group controlId='price'>
-                            <Form.Label>Price</Form.Label>
+                        <Form.Group controlId='minimumInvestment'>
+                            <Form.Label>Minimum Investment ($)</Form.Label>
                             <Form.Control
                                 type='number'
-                                placeholder='Enter price'
-                                value={price}
-                                onChange={(e) => setPrice(e.target.value)}
+                                placeholder='Enter minimum investment'
+                                value={minimumInvestment}
+                                onChange={(e) => setMinimumInvestment(e.target.value)}
+                            ></Form.Control>
+                        </Form.Group>
+
+                        <Form.Group controlId='targetIRR'>
+                            <Form.Label>Target IRR (%)</Form.Label>
+                            <Form.Control
+                                type='number'
+                                placeholder='Enter target IRR'
+                                value={targetIRR}
+                                onChange={(e) => setTargetIRR(e.target.value)}
+                            ></Form.Control>
+                        </Form.Group>
+
+                        <Form.Group controlId='targetCashYield'>
+                            <Form.Label>Target Cash Yield (%)</Form.Label>
+                            <Form.Control
+                                type='number'
+                                placeholder='Enter cash yield'
+                                value={targetCashYield}
+                                onChange={(e) => setTargetCashYield(e.target.value)}
+                            ></Form.Control>
+                        </Form.Group>
+
+                        <Form.Group controlId='holdPeriod'>
+                            <Form.Label>Hold Period (Years)</Form.Label>
+                            <Form.Control
+                                type='number'
+                                placeholder='Enter hold period'
+                                value={holdPeriod}
+                                onChange={(e) => setHoldPeriod(e.target.value)}
                             ></Form.Control>
                         </Form.Group>
 
@@ -183,7 +219,7 @@ const ProductEditScreen = ({ match, history }) => {
                             ></Form.Control>
                         </Form.Group>
 
-                        <Button type='submit' variant='primary'>
+                        <Button type='submit' variant='primary' className='mt-2'>
                             Update
                         </Button>
                     </Form>

@@ -4,6 +4,7 @@ import { Table, Button, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
+import NumberFormat from 'react-number-format';
 import Paginate from '../components/Paginate';
 import { listProducts, deleteProduct, createProduct } from '../actions/productActions';
 import { PRODUCT_CREATE_RESET } from '../constants/productConstants';
@@ -84,7 +85,7 @@ const ProductListScreen = ({ history, match }) => {
                                 <tr key={product._id}>
                                     <td>{product._id}</td>
                                     <td>{product.name}</td>
-                                    <td>${product.price}</td>
+                                    <td><NumberFormat value={product.minimumInvestment} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={'2'} fixedDecimalScale/></td>
                                     <td>{product.category}</td>
                                     <td>{product.brand}</td>
                                     <td>

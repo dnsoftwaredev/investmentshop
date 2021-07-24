@@ -1,5 +1,50 @@
 const products = [
   {
+    name: 'Multifamily Development in D.C.',
+    image: '/images/apartment-3.jpg',
+    description:
+      'A 120-unit apartment community ideally located in Fremont, CA, one of the largest cities in the Bay Area.',
+    brand: 'SAC, Inc.',
+    category: 'Real Estate - Multifamily',
+    minimumInvestment: 25000,
+    countInStock: 250,
+    holdPeriod: 3,
+    targetIRR: 20.5,
+    targetCashYield: 1.4,
+    rating: 2,
+    numReviews: 4,
+  },
+  {
+    name: 'Fremont Value-add Apartments',
+    image: '/images/apartment-4.jpg',
+    description:
+      '4 miles away from Tesla Motors and Facebook apartment buildings',
+    brand: 'NSE, Inc.',
+    category: 'Real Estate - Multifamily',
+    minimumInvestment: 50000,
+    countInStock: 25,
+    holdPeriod: 5,
+    targetIRR: 17.4,
+    targetCashYield: 4,
+    rating: 3.5,
+    numReviews: 3,
+  },
+  {
+    name: 'R Cryptocurrency Mining Company',
+    image: '/images/crypto.jpg',
+    description:
+      'Invest in building and running a bicoin mine at a fraction of the market price',
+    brand: 'R, Inc.',
+    category: 'BitCoin - Alternative Investment',
+    minimumInvestment: 50000,
+    countInStock: 25,
+    holdPeriod: 5,
+    targetIRR: 35,
+    targetCashYield: 8,
+    rating: 4,
+    numReviews: 8,
+  },
+  {
     name: 'Super Apartment Investment',
     image: '/images/apartment.jpg',
     description:
@@ -75,11 +120,11 @@ const products = [
     numReviews: 6,
   },
   {
-    name: 'Apartment Building In North CA',
+    name: 'Apartment Building In Northern California',
     image: '/images/apartment-2.jpg',
     description:
       '4 miles away from Tesla Motors and Facebook apartment buildings',
-    brand: 'NSE, Inc.',
+    brand: 'VMN, Inc.',
     category: 'Real Estate - Multifamily',
     minimumInvestment: 200000,
     countInStock: 150,
@@ -89,6 +134,7 @@ const products = [
     rating: 5,
     numReviews: 6,
   },
+
 ];
 
 export default products;

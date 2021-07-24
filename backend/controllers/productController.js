@@ -9,7 +9,7 @@ import asyncHandler from 'express-async-handler';
 const getProducts = asyncHandler(async (req, res) => {
     // how to get everything behind ?= (or query)
     // below is implementation of search functionarlity
-    const pageSize = 10;
+    const pageSize = 3;
     const page = Number(req.query.pageNumber) || 1;
 
     const keyword = req.query.keyword ? {
@@ -60,7 +60,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 const createProduct = asyncHandler(async (req, res) => {
     const product = new Product({
         name: 'Sample name',
-        price: 0,
+        minimumInvestment: 0,
         user: req.user._id,
         image: '/images/sample.jpg',
         brand: 'Sample brand',
@@ -78,13 +78,16 @@ const createProduct = asyncHandler(async (req, res) => {
 // @route   PUT /api/products/:id
 // @access  Private/Admin
 const updateProduct = asyncHandler(async (req, res) => {
-    const { name, price, description, image, brand, category, countInStock } = req.body;
+    const { name, minimumInvestment, description, image, brand, category, countInStock, targetIRR, targetCashYield, holdPeriod } = req.body;
 
     const product = await Product.findById(req.params.id);
 
     if (product) {
         product.name = name;
-        product.price = price;
+        product.minimumInvestment = minimumInvestment;
+        product.targetIRR = targetIRR;
+        product.targetCashYield = targetCashYield;
+        product.holdPeriod = holdPeriod;
         product.description = description;
         product.image = image;
         product.brand = brand;
@@ -140,7 +143,7 @@ const createProductReview = asyncHandler(async (req, res) => {
 // @access  Public
 const getTopProducts = asyncHandler(async (req, res) => {
     // sort ascending order -1; descending order 1
-    const products = await Product.find({}).sort({ rating: -1 }).limit(3);
+    const products = await Product.find({}).sort({ targetIRR: -1 }).limit(3);
     res.json(products);
 });
 

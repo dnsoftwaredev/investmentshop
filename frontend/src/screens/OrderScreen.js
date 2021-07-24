@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { PayPalButton } from 'react-paypal-button-v2';
-import { Row, Col, ListGroup, Image, Card, Button } from 'react-bootstrap';
+import { Row, Col, ListGroup, Image, Card, Button, Table } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
@@ -119,13 +119,45 @@ const OrderScreen = ({ match, history }) => {
                                                 </Link>
                                             </Col>
                                             <Col md={4}>
-                                                {item.qty} x <NumberFormat value={item.minimumInvestment} displayType={'text'} thousandSeparator={true} prefix={'$'} /> = <NumberFormat value={item.qty * item.minimumInvestment} displayType={'text'} thousandSeparator={true} prefix={'$'} />
+                                                {item.qty} x <NumberFormat value={item.minimumInvestment} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={'2'} fixedDecimalScale/> = <NumberFormat value={item.qty * item.minimumInvestment} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={'2'} fixedDecimalScale/>
                                             </Col>
                                         </Row>
                                     </ListGroup.Item>
                                 ))}
                             </ListGroup>
                         )}
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                        <h2>Pro Forma</h2>
+                        <Table striped bordered hover responsive className='table-sm'>
+                            <thead>
+                                <tr>
+                                    <th>NAME</th>
+                                    <th>TARGET IRR</th>
+                                    <th>TARGET CASH YIELD</th>
+                                    <th>RETURN (CASH/YR)</th>
+                                    <th>RETURN (TOTAL/YR)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {order.orderItems.map(order => (
+                                    <tr key={order._id}>
+                                        <td>{order.name}</td>
+                                        <td><NumberFormat value={order.targetIRR} displayType={'text'} thousandSeparator={true} suffix={'%'} decimalScale={'2'} fixedDecimalScale/></td>
+                                        <td><NumberFormat value={order.targetCashYield} displayType={'text'} thousandSeparator={true} suffix={'%'} decimalScale={'2'} fixedDecimalScale/></td>
+                                        <td><NumberFormat value={order.targetCashYield / 100 * order.minimumInvestment * order.qty} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={'2'} fixedDecimalScale/></td>
+                                        <td><NumberFormat value={order.targetIRR / 100 * order.minimumInvestment * order.qty} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={'2'} fixedDecimalScale/></td>
+                                    </tr>
+                                ))}
+                                <tr key={'total'}>
+                                    <td><strong>TOTAL</strong></td>
+                                    <td><NumberFormat value={order.orderItems.reduce((acc, order) => acc + order.minimumInvestment * order.qty * order.targetIRR / 100, 0) / order.itemsPrice * 100} displayType={'text'} thousandSeparator={true} suffix={'%'} decimalScale={'2'} fixedDecimalScale/></td>
+                                    <td><NumberFormat value={order.orderItems.reduce((acc, order) => acc + order.minimumInvestment * order.qty * order.targetCashYield / 100, 0) / order.itemsPrice * 100} displayType={'text'} thousandSeparator={true} suffix={'%'} decimalScale={'2'} fixedDecimalScale/></td>
+                                    <td><NumberFormat value={order.orderItems.reduce((acc, order) => acc + order.minimumInvestment * order.qty * order.targetCashYield / 100, 0)} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={'2'} fixedDecimalScale/></td>
+                                    <td><NumberFormat value={order.orderItems.reduce((acc, order) => acc + order.minimumInvestment * order.qty * order.targetIRR / 100, 0)} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={'2'} fixedDecimalScale/></td>
+                                </tr>
+                            </tbody>
+                        </Table>
                     </ListGroup.Item>
                 </ListGroup>
             </Col>
@@ -138,19 +170,19 @@ const OrderScreen = ({ match, history }) => {
                         <ListGroup.Item>
                             <Row>
                                 <Col>Investment Amount</Col>
-                                <Col><NumberFormat value={order.itemsPrice} displayType={'text'} thousandSeparator={true} prefix={'$'} /></Col>
+                                <Col><NumberFormat value={order.itemsPrice} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={'2'} fixedDecimalScale/></Col>
                             </Row>
                         </ListGroup.Item>
                         <ListGroup.Item>
                             <Row>
                                 <Col>Platform Fee</Col>
-                                <Col><NumberFormat value={order.platformFee} displayType={'text'} thousandSeparator={true} prefix={'$'} /></Col>
+                                <Col><NumberFormat value={order.platformFee} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={'2'} fixedDecimalScale/></Col>
                             </Row>
                         </ListGroup.Item>
                         <ListGroup.Item>
                             <Row>
                                 <Col>Total</Col>
-                                <Col><NumberFormat value={order.totalPrice} displayType={'text'} thousandSeparator={true} prefix={'$'} /></Col>
+                                <Col><NumberFormat value={order.totalPrice} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={'2'} fixedDecimalScale/></Col>
                             </Row>
                         </ListGroup.Item>
                         {!order.isPaid && (

@@ -4,6 +4,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
+import NumberFormat from 'react-number-format';
 import { getUserDetails, updateUserProfile } from '../actions/userActions';
 import { USER_UPDATE_PROFILE_RESET } from '../constants/userContants';
 import { listMyOrders } from '../actions/orderActions';
@@ -79,8 +80,8 @@ const ProfileScreen = ({ location, history }) => {
                         <Form.Label>Confirm Password</Form.Label>
                         <Form.Control type='password' placeholder='Confirm password' value={confirmPassword} autoComplete='on' onChange={(e) => setConfirmPassword(e.target.value)}></Form.Control>
                     </Form.Group>
-                    <Button type='submit' variant='primary'>
-                        Update
+                    <Button type='submit' variant='primary' className='mt-2'>
+                        Update/Refresh
                     </Button>
                 </Form>
             </Col>
@@ -103,7 +104,7 @@ const ProfileScreen = ({ location, history }) => {
                                 <tr key={order._id}>
                                     <td>{order._id}</td>
                                     <td>{order.createdAt.substring(0, 10)}</td>
-                                    <td>{order.totalPrice}</td>
+                                    <td><NumberFormat value={order.totalPrice} displayType={'text'} thousandSeparator={true} prefix={'$'} /></td>
                                     <td>{order.isPaid ? order.paidAt.substring(0, 10) : (
                                         <i className='fas fa-times' style={{ color: 'red' }}></i>
                                     )}</td>

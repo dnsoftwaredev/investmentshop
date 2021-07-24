@@ -180,7 +180,7 @@ const ProductScreen = ({ history, match }) => {
                                                 <Form.Label>Comment</Form.Label>
                                                 <Form.Control as='textarea' row='3' value={comment} onChange={(e) => setComment(e.target.value)}></Form.Control>
                                             </Form.Group>
-                                            <Button type='submit' variant='primary'>
+                                            <Button type='submit' variant='primary' className='mt-2'>
                                                 Submit
                                             </Button>
                                         </Form>
